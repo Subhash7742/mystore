@@ -1,426 +1,252 @@
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  Image,
+  Animated,
+  Easing,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-import 'package:flutter/material.dart';
+export default function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-void main() {
-  runApp(const PremiumStoreApp());
+  // Animation values (Puma Style Intro)
+  const logoScale = useRef(new Animated.Value(0.7)).current;
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const formOpacity = useRef(new Animated.Value(0)).current;
+  const formTranslateY = useRef(new Animated.Value(40)).current;
+
+  useEffect(() => {
+    // Step 1: Puma style logo entrance (Fade in + Zoom)
+    Animated.parallel([
+      Animated.timing(logoOpacity, {
+        toValue: 1,
+        duration: 900,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.spring(logoScale, {
+        toValue: 1,
+        friction: 6,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      // Step 2: Form slides up smoothly after logo settles
+      Animated.parallel([
+        Animated.timing(formOpacity, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(formTranslateY, {
+          toValue: 0,
+          duration: 600,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    });
+  }, []);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#141518" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.innerContainer}
+      >
+        {/* Animated Brand Header */}
+        <Animated.View
+          style={[
+            styles.headerContainer,
+            {
+              opacity: logoOpacity,
+              transform: [{ scale: logoScale }],
+            },
+          ]}
+        >
+          <View style={styles.logoWrapper}>
+            {/* Replace URI with your lion logo PNG */}
+            <Image
+              source={{ uri: 'https://images.unsplash.com/photo-1614027164847-1b28caa144ee?w=400' }}
+              style={styles.lionLogo}
+              resizeMode="contain"
+            />
+          </View>
+          <Text style={styles.brandTitle}>MEES</Text>
+          <Text style={styles.brandTagline}>UNLEASH THE BEAST</Text>
+        </Animated.View>
+
+        {/* Animated Sliding Form */}
+        <Animated.View
+          style={[
+            styles.formContainer,
+            {
+              opacity: formOpacity,
+              transform: [{ translateY: formTranslateY }],
+            },
+          ]}
+        >
+          {/* Email Input */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="EMAIL ADDRESS"
+              placeholderTextColor="#5C5E66"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
+          {/* Password Input */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[styles.input, { paddingRight: 45 }]}
+              placeholder="PASSWORD"
+              placeholderTextColor="#5C5E66"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity
+              style={styles.eyeIcon}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Ionicons
+                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={20}
+                color="#8E8E93"
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Puma Style Solid Action Button */}
+          <TouchableOpacity style={styles.loginBtn} activeOpacity={0.85}>
+            <Text style={styles.loginBtnText}>LOG IN</Text>
+          </TouchableOpacity>
+
+          {/* Footer Action Links */}
+          <View style={styles.footerLinks}>
+            <TouchableOpacity>
+              <Text style={styles.footerText}>Forgot Password?</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.footerText}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 }
 
-class PremiumStoreApp extends StatelessWidget {
-  const PremiumStoreApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Store',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'sans-serif',
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-        ),
-      ),
-      home: const MainHomeScreen(),
-    );
-  }
-}
-
-class MainHomeScreen extends StatefulWidget {
-  const MainHomeScreen({super.key});
-
-  @override
-  State<MainHomeScreen> createState() => _MainHomeScreenState();
-}
-
-class _MainHomeScreenState extends State<MainHomeScreen> {
-  int _selectedIndex = 0;
-
-  Widget _buildBody() {
-    switch (_selectedIndex) {
-      case 0:
-        return _buildHomeView();
-      case 1:
-        return const Center(child: Text('LAUNCHES', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5)));
-      case 2:
-        return const Center(child: Text('SHOP CATALOG', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5)));
-      case 3:
-        return const Center(child: Text('BAG IS EMPTY', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5)));
-      case 4:
-        return const PumaAuthScreen();
-      default:
-        return _buildHomeView();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 16,
-        title: Container(
-          height: 44,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.search, color: Colors.black87, size: 22),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'SEARCH PRODUCTS...',
-                    hintStyle: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w600),
-                    border: InputBorder.none,
-                    isDense: true,
-                  ),
-                ),
-              ),
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                icon: const Icon(Icons.person_outline, color: Colors.black87, size: 22),
-                onPressed: () {
-                  setState(() => _selectedIndex = 4);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: _buildBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 10,
-        unselectedFontSize: 10,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.flash_on_outlined),
-            activeIcon: Icon(Icons.flash_on),
-            label: 'HOME',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            activeIcon: Icon(Icons.calendar_today),
-            label: 'LAUNCHES',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.manage_search),
-            activeIcon: Icon(Icons.manage_search),
-            label: 'SHOP',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            activeIcon: Icon(Icons.shopping_bag),
-            label: 'BAG',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'ACCOUNT',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHomeView() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              Container(
-                height: 380,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1000&q=80',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Container(
-                height: 380,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.75),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 24,
-                left: 20,
-                right: 20,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'CHANGE OF PACE',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      'GEAR UP FOR THE NEW SEASON',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.1,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    border: Border(right: BorderSide(color: Colors.grey.shade800, width: 0.5)),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Viewing: FOR HIM')),
-                      );
-                    },
-                    child: const Text(
-                      'FOR HIM',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 13),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 52,
-                  color: Colors.black,
-                  child: TextButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Viewing: FOR HER')),
-                      );
-                    },
-                    child: const Text(
-                      'FOR HER',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 13),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'LATEST DROPS',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1.2),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 240,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              children: [
-                _buildProductCard(
-                  imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80',
-                  title: 'Speedcat OG Sneakers',
-                  price: '₹7,999',
-                  isNew: true,
-                ),
-                _buildProductCard(
-                  imageUrl: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=500&q=80',
-                  title: 'Palermo Suede Special',
-                  price: '₹6,499',
-                  isNew: true,
-                ),
-                _buildProductCard(
-                  imageUrl: 'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=500&q=80',
-                  title: 'Suede Classic XXI',
-                  price: '₹5,999',
-                  isNew: false,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 30),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductCard({
-    required String imageUrl,
-    required String title,
-    required String price,
-    required bool isNew,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Selected: $title')),
-        );
-      },
-      child: Container(
-        width: 170,
-        margin: const EdgeInsets.symmetric(horizontal: 6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                Container(
-                  height: 160,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(4),
-                    image: DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
-                  ),
-                ),
-                if (isNew)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      color: Colors.black,
-                      child: const Text(
-                        'NEW',
-                        style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.8),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            const SizedBox(height: 4),
-            Text(price, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Puma Style Login / Registration Screen
-class PumaAuthScreen extends StatefulWidget {
-  const PumaAuthScreen({super.key});
-
-  @override
-  State<PumaAuthScreen> createState() => _PumaAuthScreenState();
-}
-
-class _PumaAuthScreenState extends State<PumaAuthScreen> {
-  bool isLogin = true;
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            isLogin ? 'MY ACCOUNT' : 'JOIN THE CLUB',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 1.5),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            isLogin ? 'Sign in to access your orders and wishlist.' : 'Create an account for faster checkout and exclusive drops.',
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 13, height: 1.4),
-          ),
-          const SizedBox(height: 32),
-          const Text('EMAIL ADDRESS *', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1)),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.grey.shade400)),
-              focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.black, width: 2)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text('PASSWORD *', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1)),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _passwordController,
-            obscureText: true,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.grey.shade400)),
-              focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.black, width: 2)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            ),
-          ),
-          const SizedBox(height: 28),
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                elevation: 0,
-              ),
-              onPressed: () {
-                final action = isLogin ? 'Signed In' : 'Registered';
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('$action successfully as ${_emailController.text}')),
-                );
-              },
-              child: Text(
-                isLogin ? 'LOGIN' : 'CREATE ACCOUNT',
-                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5, fontSize: 13),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: TextButton(
-              onPressed: () => setState(() => isLogin = !isLogin),
-              child: Text(
-                isLogin ? 'NEED AN ACCOUNT? JOIN NOW' : 'ALREADY HAVE AN ACCOUNT? LOGIN',
-                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12, decoration: TextDecoration.underline),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#141518',
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 28,
+  },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 35,
+  },
+  logoWrapper: {
+    width: 130,
+    height: 130,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#E5A93C',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 20,
+    elevation: 15,
+  },
+  lionLogo: {
+    width: 120,
+    height: 120,
+  },
+  brandTitle: {
+    fontSize: 34,
+    fontWeight: '900',
+    color: '#ECC167',
+    letterSpacing: 4,
+    marginTop: 10,
+    textShadowColor: 'rgba(236, 193, 103, 0.45)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 10,
+  },
+  brandTagline: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#D4AF37',
+    letterSpacing: 2.2,
+    marginTop: 3,
+  },
+  formContainer: {
+    width: '100%',
+  },
+  inputWrapper: {
+    position: 'relative',
+    marginBottom: 16,
+    borderRadius: 12,
+    backgroundColor: '#1E2126',
+    borderWidth: 1.2,
+    borderColor: '#32353E',
+  },
+  input: {
+    height: 54,
+    paddingHorizontal: 16,
+    color: '#FFFFFF',
+    fontSize: 13,
+    letterSpacing: 1,
+    fontWeight: '600',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 16,
+    top: 17,
+  },
+  loginBtn: {
+    backgroundColor: '#FFFFFF',
+    height: 52,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
+    elevation: 4,
+  },
+  loginBtnText: {
+    color: '#111215',
+    fontWeight: '800',
+    fontSize: 14,
+    letterSpacing: 1.5,
+  },
+  footerLinks: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 22,
+    paddingHorizontal: 4,
+  },
+  footerText: {
+    color: '#C6C7CC',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+});
