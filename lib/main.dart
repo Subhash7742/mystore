@@ -1,252 +1,307 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
-  Image,
-  Animated,
-  Easing,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import 'package:flutter/material.dart';
 
-export default function App() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  // Animation values (Puma Style Intro)
-  const logoScale = useRef(new Animated.Value(0.7)).current;
-  const logoOpacity = useRef(new Animated.Value(0)).current;
-  const formOpacity = useRef(new Animated.Value(0)).current;
-  const formTranslateY = useRef(new Animated.Value(40)).current;
-
-  useEffect(() => {
-    // Step 1: Puma style logo entrance (Fade in + Zoom)
-    Animated.parallel([
-      Animated.timing(logoOpacity, {
-        toValue: 1,
-        duration: 900,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.spring(logoScale, {
-        toValue: 1,
-        friction: 6,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      // Step 2: Form slides up smoothly after logo settles
-      Animated.parallel([
-        Animated.timing(formOpacity, {
-          toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-        Animated.timing(formTranslateY, {
-          toValue: 0,
-          duration: 600,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-      ]).start();
-    });
-  }, []);
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#141518" />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.innerContainer}
-      >
-        {/* Animated Brand Header */}
-        <Animated.View
-          style={[
-            styles.headerContainer,
-            {
-              opacity: logoOpacity,
-              transform: [{ scale: logoScale }],
-            },
-          ]}
-        >
-          <View style={styles.logoWrapper}>
-            {/* Replace URI with your lion logo PNG */}
-            <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1614027164847-1b28caa144ee?w=400' }}
-              style={styles.lionLogo}
-              resizeMode="contain"
-            />
-          </View>
-          <Text style={styles.brandTitle}>MEES</Text>
-          <Text style={styles.brandTagline}>UNLEASH THE BEAST</Text>
-        </Animated.View>
-
-        {/* Animated Sliding Form */}
-        <Animated.View
-          style={[
-            styles.formContainer,
-            {
-              opacity: formOpacity,
-              transform: [{ translateY: formTranslateY }],
-            },
-          ]}
-        >
-          {/* Email Input */}
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder="EMAIL ADDRESS"
-              placeholderTextColor="#5C5E66"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
-
-          {/* Password Input */}
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={[styles.input, { paddingRight: 45 }]}
-              placeholder="PASSWORD"
-              placeholderTextColor="#5C5E66"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-            />
-            <TouchableOpacity
-              style={styles.eyeIcon}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Ionicons
-                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                size={20}
-                color="#8E8E93"
-              />
-            </TouchableOpacity>
-          </View>
-
-          {/* Puma Style Solid Action Button */}
-          <TouchableOpacity style={styles.loginBtn} activeOpacity={0.85}>
-            <Text style={styles.loginBtnText}>LOG IN</Text>
-          </TouchableOpacity>
-
-          {/* Footer Action Links */}
-          <View style={styles.footerLinks}>
-            <TouchableOpacity>
-              <Text style={styles.footerText}>Forgot Password?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.footerText}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
+void main() {
+  runApp(const MyApp());
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#141518',
-  },
-  innerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 28,
-  },
-  headerContainer: {
-    alignItems: 'center',
-    marginBottom: 35,
-  },
-  logoWrapper: {
-    width: 130,
-    height: 130,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#E5A93C',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.9,
-    shadowRadius: 20,
-    elevation: 15,
-  },
-  lionLogo: {
-    width: 120,
-    height: 120,
-  },
-  brandTitle: {
-    fontSize: 34,
-    fontWeight: '900',
-    color: '#ECC167',
-    letterSpacing: 4,
-    marginTop: 10,
-    textShadowColor: 'rgba(236, 193, 103, 0.45)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 10,
-  },
-  brandTagline: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#D4AF37',
-    letterSpacing: 2.2,
-    marginTop: 3,
-  },
-  formContainer: {
-    width: '100%',
-  },
-  inputWrapper: {
-    position: 'relative',
-    marginBottom: 16,
-    borderRadius: 12,
-    backgroundColor: '#1E2126',
-    borderWidth: 1.2,
-    borderColor: '#32353E',
-  },
-  input: {
-    height: 54,
-    paddingHorizontal: 16,
-    color: '#FFFFFF',
-    fontSize: 13,
-    letterSpacing: 1,
-    fontWeight: '600',
-  },
-  eyeIcon: {
-    position: 'absolute',
-    right: 16,
-    top: 17,
-  },
-  loginBtn: {
-    backgroundColor: '#FFFFFF',
-    height: 52,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 8,
-    elevation: 4,
-  },
-  loginBtnText: {
-    color: '#111215',
-    fontWeight: '800',
-    fontSize: 14,
-    letterSpacing: 1.5,
-  },
-  footerLinks: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 22,
-    paddingHorizontal: 4,
-  },
-  footerText: {
-    color: '#C6C7CC',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'MEES',
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF141518),
+      ),
+      home: const MeesLoginScreen(),
+    );
+  }
+}
+
+class MeesLoginScreen extends StatefulWidget {
+  const MeesLoginScreen({super.key});
+
+  @override
+  State<MeesLoginScreen> createState() => _MeesLoginScreenState();
+}
+
+class _MeesLoginScreenState extends State<MeesLoginScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _logoScale;
+  late Animation<double> _logoFade;
+  late Animation<double> _formFade;
+  late Animation<Offset> _formSlide;
+
+  bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
+
+    // 1. Puma Style Zoom & Fade entrance for Logo
+    _logoScale = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOutBack),
+      ),
+    );
+
+    _logoFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeIn),
+      ),
+    );
+
+    // 2. Smooth Slide Up for form
+    _formFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeIn),
+      ),
+    );
+
+    _formSlide = Tween<Offset>(
+      begin: const Offset(0, 0.25),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF141518),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 28.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Animated Puma Style Glowing Lion Header
+                FadeTransition(
+                  opacity: _logoFade,
+                  child: ScaleTransition(
+                    scale: _logoScale,
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFF1C1E24),
+                            border: Border.all(
+                              color: const Color(0xFFE5A93C),
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFE5A93C).withOpacity(0.4),
+                                blurRadius: 25,
+                                spreadRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: Text(
+                              '🦁',
+                              style: TextStyle(fontSize: 50),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        const Text(
+                          'MEES',
+                          style: TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 4,
+                            color: Color(0xFFECC167),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'UNLEASH THE BEAST',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 2,
+                            color: Color(0xFFD4AF37),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 42),
+
+                // Slide Up Form
+                FadeTransition(
+                  opacity: _formFade,
+                  child: SlideTransition(
+                    position: _formSlide,
+                    child: Column(
+                      children: [
+                        // Email Field
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1E2126),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: const Color(0xFF353842),
+                              width: 1.2,
+                            ),
+                          ),
+                          child: const TextField(
+                            style: TextStyle(color: Colors.white, fontSize: 13),
+                            decoration: InputDecoration(
+                              hintText: 'EMAIL ADDRESS',
+                              hintStyle: TextStyle(
+                                color: Color(0xFF5E6068),
+                                fontSize: 12,
+                                letterSpacing: 1,
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Password Field
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1E2126),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: const Color(0xFF353842),
+                              width: 1.2,
+                            ),
+                          ),
+                          child: TextField(
+                            obscureText: _obscurePassword,
+                            style: const TextStyle(color: Colors.white, fontSize: 13),
+                            decoration: InputDecoration(
+                              hintText: 'PASSWORD',
+                              hintStyle: const TextStyle(
+                                color: Color(0xFF5E6068),
+                                fontSize: 12,
+                                letterSpacing: 1,
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  color: const Color(0xFF8E8E93),
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Solid Puma-Style Action Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: const Color(0xFF111215),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 4,
+                            ),
+                            child: const Text(
+                              'LOG IN',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Footer Links
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  color: Color(0xFFCACBD1),
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  color: Color(0xFFCACBD1),
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
