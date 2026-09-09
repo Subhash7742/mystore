@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -36,31 +37,21 @@ class MainHomeScreen extends StatefulWidget {
 class _MainHomeScreenState extends State<MainHomeScreen> {
   int _selectedIndex = 0;
 
-  // Har screen ke liye alag view
   Widget _buildBody() {
     switch (_selectedIndex) {
       case 0:
         return _buildHomeView();
       case 1:
-        return _buildPlaceholderView('Launches & Releases');
+        return const Center(child: Text('LAUNCHES', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5)));
       case 2:
-        return _buildPlaceholderView('Shop Catalog');
+        return const Center(child: Text('SHOP CATALOG', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5)));
       case 3:
-        return _buildPlaceholderView('Your Cart is Empty');
+        return const Center(child: Text('BAG IS EMPTY', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5)));
       case 4:
-        return _buildPlaceholderView('User Account & Profile');
+        return const PumaAuthScreen();
       default:
         return _buildHomeView();
     }
-  }
-
-  Widget _buildPlaceholderView(String title) {
-    return Center(
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-    );
   }
 
   @override
@@ -82,8 +73,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
               Expanded(
                 child: TextField(
                   decoration: InputDecoration(
-                    hintText: 'Search...',
-                    hintStyle: TextStyle(color: Colors.grey.shade600, fontSize: 15),
+                    hintText: 'SEARCH PRODUCTS...',
+                    hintStyle: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w600),
                     border: InputBorder.none,
                     isDense: true,
                   ),
@@ -92,11 +83,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
               IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
-                icon: const Icon(Icons.qr_code_scanner, color: Colors.black87, size: 20),
+                icon: const Icon(Icons.person_outline, color: Colors.black87, size: 22),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Barcode scanner clicked!')),
-                  );
+                  setState(() => _selectedIndex = 4);
                 },
               ),
             ],
@@ -106,11 +95,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       body: _buildBody(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+        onTap: (index) => setState(() => _selectedIndex = index),
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
@@ -133,9 +118,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
             label: 'SHOP',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart_outlined),
-            activeIcon: Icon(Icons.shopping_cart),
-            label: 'CART',
+            icon: Icon(Icons.shopping_bag_outlined),
+            activeIcon: Icon(Icons.shopping_bag),
+            label: 'BAG',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
@@ -223,17 +208,12 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                   child: TextButton(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Selected: FOR HIM')),
+                        const SnackBar(content: Text('Viewing: FOR HIM')),
                       );
                     },
                     child: const Text(
                       'FOR HIM',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 13),
                     ),
                   ),
                 ),
@@ -245,17 +225,12 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                   child: TextButton(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Selected: FOR HER')),
+                        const SnackBar(content: Text('Viewing: FOR HER')),
                       );
                     },
                     child: const Text(
                       'FOR HER',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 13),
                     ),
                   ),
                 ),
@@ -267,11 +242,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               'LATEST DROPS',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.2,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1.2),
             ),
           ),
           const SizedBox(height: 12),
@@ -317,7 +288,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     return GestureDetector(
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Clicked: $title ($price)')),
+          SnackBar(content: Text('Selected: $title')),
         );
       },
       child: Container(
@@ -333,10 +304,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                   decoration: BoxDecoration(
                     color: Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(4),
-                    image: DecorationImage(
-                      image: NetworkImage(imageUrl),
-                      fit: BoxFit.cover,
-                    ),
+                    image: DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
                   ),
                 ),
                 if (isNew)
@@ -348,31 +316,110 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                       color: Colors.black,
                       child: const Text(
                         'NEW',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.8,
-                        ),
+                        style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.8),
                       ),
                     ),
                   ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-            ),
+            Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
             const SizedBox(height: 4),
-            Text(
-              price,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
-            ),
+            Text(price, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// Puma Style Login / Registration Screen
+class PumaAuthScreen extends StatefulWidget {
+  const PumaAuthScreen({super.key});
+
+  @override
+  State<PumaAuthScreen> createState() => _PumaAuthScreenState();
+}
+
+class _PumaAuthScreenState extends State<PumaAuthScreen> {
+  bool isLogin = true;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isLogin ? 'MY ACCOUNT' : 'JOIN THE CLUB',
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isLogin ? 'Sign in to access your orders and wishlist.' : 'Create an account for faster checkout and exclusive drops.',
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 13, height: 1.4),
+          ),
+          const SizedBox(height: 32),
+          const Text('EMAIL ADDRESS *', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1)),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.grey.shade400)),
+              focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.black, width: 2)),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text('PASSWORD *', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1)),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.grey.shade400)),
+              focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.black, width: 2)),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            ),
+          ),
+          const SizedBox(height: 28),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                elevation: 0,
+              ),
+              onPressed: () {
+                final action = isLogin ? 'Signed In' : 'Registered';
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('$action successfully as ${_emailController.text}')),
+                );
+              },
+              child: Text(
+                isLogin ? 'LOGIN' : 'CREATE ACCOUNT',
+                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5, fontSize: 13),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: TextButton(
+              onPressed: () => setState(() => isLogin = !isLogin),
+              child: Text(
+                isLogin ? 'NEED AN ACCOUNT? JOIN NOW' : 'ALREADY HAVE AN ACCOUNT? LOGIN',
+                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12, decoration: TextDecoration.underline),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
